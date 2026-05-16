@@ -1,47 +1,47 @@
-# Klasifikasi Karakter Tulisan Tangan (EMNIST Letters) menggunakan HOG dan SVM
+# Handwritten Character Classification (EMNIST Letters) using HOG and SVM
 
-Proyek ini adalah implementasi *pipeline Machine Learning* untuk mengklasifikasikan karakter tulisan tangan dari dataset EMNIST (Extended MNIST) khusus huruf (A-Z). Proyek ini dikembangkan sebagai pemenuhan tugas Ujian Tengah Semester mata kuliah Machine Vision oleh Valdhy Maulana Alzikri.
+This project is an implementation of a Machine Learning pipeline to classify handwritten characters from the EMNIST (Extended MNIST) dataset, specifically focusing on letters (A-Z). This project was developed as a Midterm Project for the Machine Vision course 
 
-Algoritma yang digunakan berfokus pada ekstraksi fitur menggunakan **Histogram of Oriented Gradients (HOG)** dan klasifikasi menggunakan **Support Vector Machine (SVM)** dengan optimasi parameter.
+The algorithm focuses on feature extraction using **Histogram of Oriented Gradients (HOG)** and classification using **Support Vector Machine (SVM)** with parameter optimization.
 
 ## 📊 Dataset
-Dataset yang digunakan adalah **EMNIST Letters** format CSV. 
-- Terdiri dari 26 kelas (Huruf A sampai Z).
-- Untuk mencegah bias model, dataset diseimbangkan secara ketat menjadi **2600 sampel** (tepat 100 sampel acak untuk masing-masing kelas).
-- Data dibagi dengan proporsi **80% Training** (2080 citra) dan **20% Testing** (520 citra) menggunakan *stratified shuffle split*.
+The dataset used is the **EMNIST Letters** in CSV format. 
+- Consists of 26 classes (Letters A to Z).
+- To prevent model bias, the dataset is strictly balanced to **2600 samples** (exactly 100 random samples for each class).
+- The data is split into **80% Training** (2080 images) and **20% Testing** (520 images) using a *stratified shuffle split*.
 
-## ⚙️ Alur Kerja (Pipeline)
+## ⚙️ Pipeline
 
-### 1. Pra-pemrosesan Citra (Image Preprocessing)
-Citra mentah pada dataset EMNIST beresolusi 28x28 piksel dan secara *default* tersimpan dalam kondisi terotasi 90 derajat serta terbalik (*flipped*).
-- **Koreksi Rotasi:** Setiap larik (*array*) 1D diubah bentuknya (*reshape*) menjadi matriks 28x28, kemudian dilakukan operasi **Transpose (`.T`)** agar citra huruf berdiri tegak sempurna sebelum diekstraksi.
+### 1. Image Preprocessing
+The raw images in the EMNIST dataset have a resolution of 28x28 pixels and are stored rotated by 90 degrees and flipped by default.
+- **Rotation Correction:** Each 1D array is reshaped into a 28x28 matrix, followed by a **Transpose (`.T`)** operation to ensure the letter images stand perfectly upright before extraction.
 
-### 2. Ekstraksi Fitur (HOG)
-Karena resolusi citra sangat rendah (28x28), parameter HOG di-*tuning* pada tingkat presisi tinggi agar tidak kehilangan detail lengkungan karakter:
+### 2. Feature Extraction (HOG)
+Because the image resolution is very low (28x28), the HOG parameters were fine-tuned with high precision so as not to lose the details of the character curves:
 - `orientations` = 9
 - `pixels_per_cell` = (4, 4)
 - `cells_per_block` = (2, 2)
-- *Output:* 1296 dimensi fitur per citra.
+- *Output:* 1296 feature dimensions per image.
 
-### 3. Klasifikasi dan Tuning (SVM)
-Pencarian parameter bobot terbaik dilakukan menggunakan **GridSearchCV** (dengan *Cross-Validation* = 5 fold).
-- Parameter terbaik yang ditemukan: `C=10`, `gamma='scale'`, `kernel='rbf'`.
-- Kernel RBF (*Radial Basis Function*) terbukti paling tangguh dalam memisahkan pola data citra non-linear pada ruang dimensi tinggi.
+### 3. Classification and Tuning (SVM)
+The search for the best weight parameters was conducted using **GridSearchCV** (with a 5-fold Cross-Validation).
+- The best parameters found: `C=10`, `gamma='scale'`, `kernel='rbf'`.
+- The RBF (*Radial Basis Function*) kernel proved to be the most robust in separating non-linear image data patterns in a high-dimensional space.
 
-## 📈 Metrik dan Hasil Evaluasi
+## 📈 Evaluation Metrics and Results
 
-Model dievaluasi secara ketat menggunakan pengujian validasi saat masa latih dan pengujian pada data yang belum pernah dilihat sebelumnya.
+The model was strictly evaluated using validation testing during the training phase and testing on unseen data.
 
-- **Evaluasi LOOCV (Leave-One-Out Cross-Validation) pada Data Latih:**
+- **LOOCV (Leave-One-Out Cross-Validation) Evaluation on Training Data:**
   - Accuracy: **84.2%**
   - Precision: **84.4%**
   - Recall: **84.2%**
   - F1-Score: **84.2%**
 
-- **Evaluasi Uji Akhir (Testing Data 20%):**
+- **Final Testing Evaluation (20% Unseen Data):**
   - Accuracy: **81.7%**
   - Precision: **82.3%**
   - Recall: **81.7%**
   - F1-Score: **81.7%**
 
-Jarak yang sangat rapat antara performa *training* dan *testing* membuktikan bahwa model ini sangat general dan terhindar dari fenomena *overfitting*.
+The very close gap between the training and testing performance proves that this model generalizes well and successfully avoids *overfitting*.
